@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useSocket } from '../context/SocketContext';
 import toast from 'react-hot-toast';
 import AdBanner from '../components/AdBanner';
-import { BASE_URL } from '../config';
+import { BASE_URL } from '../config/config';
 
 export default function RoomPage() {
   const { roomCode } = useParams();
