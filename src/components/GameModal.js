@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useSocket } from '../context/SocketContext';
 import toast from 'react-hot-toast';
+import logger from '../utils/logger';
 
 export default function GameModal({ game, onClose, onNavigate }) {
   const [mode, setMode] = useState(null); // 'create' | 'join'
@@ -21,6 +22,7 @@ export default function GameModal({ game, onClose, onNavigate }) {
     if (!socket) return;
 
     const handleRoomCreated = ({ roomCode, playerId }) => {
+      logger.info('Room created successfully', { roomCode, stableId, playerName });
       setLoading(false);
       localStorage.setItem('playerId', stableId);
       localStorage.setItem('playerName', playerName);
@@ -28,6 +30,7 @@ export default function GameModal({ game, onClose, onNavigate }) {
     };
 
     const handleRoomJoined = ({ roomCode, playerId }) => {
+      logger.info('Room joined successfully', { roomCode, stableId, playerName });
       setLoading(false);
       localStorage.setItem('playerId', stableId);
       localStorage.setItem('playerName', playerName);
@@ -35,6 +38,7 @@ export default function GameModal({ game, onClose, onNavigate }) {
     };
 
     const handleError = ({ message }) => {
+      logger.error('Socket error in GameModal', { message });
       setLoading(false);
       toast.error(message);
     };
@@ -48,18 +52,22 @@ export default function GameModal({ game, onClose, onNavigate }) {
       socket.off('room_joined', handleRoomJoined);
       socket.off('error', handleError);
     };
-  }, [socket, playerName, onNavigate]);
+  }, [socket, playerName, onNavigate, stableId]);
 
   const handleCreate = () => {
     if (!playerName.trim()) return toast.error('Enter your name first!');
+    logger.info('Emitting create_room', { playerName, settings, stableId });
     setLoading(true);
+    logger.socket.emit('create_room', { playerName: playerName.trim(), settings, playerId: stableId });
     socket.emit('create_room', { playerName: playerName.trim(), settings, playerId: stableId });
   };
 
   const handleJoin = () => {
     if (!playerName.trim()) return toast.error('Enter your name first!');
     if (!roomCode.trim()) return toast.error('Enter a room code!');
+    logger.info('Emitting join_room', { roomCode, playerName, stableId });
     setLoading(true);
+    logger.socket.emit('join_room', { roomCode: roomCode.trim().toUpperCase(), playerName: playerName.trim(), playerId: stableId });
     socket.emit('join_room', { roomCode: roomCode.trim().toUpperCase(), playerName: playerName.trim(), playerId: stableId });
   };
 
@@ -130,8 +138,8 @@ export default function GameModal({ game, onClose, onNavigate }) {
         {/* Mode Select */}
         {!mode ? (
           <div style={{ display: 'flex', gap: '12px' }}>
-            <ModeBtn label="+ Create Room" sub="Be the host" color={game.color} onClick={() => setMode('create')} />
-            <ModeBtn label="→ Join Room" sub="Enter a code" color="#888" onClick={() => setMode('join')} />
+            <ModeBtn label="+ Create Room" sub="Be the host" color={game.color} onClick={() => { logger.debug('Mode selected: create'); setMode('create'); }} />
+            <ModeBtn label="→ Join Room" sub="Enter a code" color="#888" onClick={() => { logger.debug('Mode selected: join'); setMode('join'); }} />
           </div>
         ) : mode === 'create' ? (
           <CreateForm

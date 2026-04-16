@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { io } from 'socket.io-client';
+import logger from '../utils/logger';
 
 const SocketContext = createContext(null);
 
@@ -9,6 +10,9 @@ function getStablePlayerId() {
   if (!id) {
     id = 'p_' + Math.random().toString(36).substring(2, 11) + Date.now().toString(36);
     localStorage.setItem('stablePlayerId', id);
+    logger.info('Generated new stablePlayerId', { id });
+  } else {
+    logger.debug('Loaded stablePlayerId from localStorage', { id });
   }
   return id;
 }
@@ -20,12 +24,39 @@ export const SocketProvider = ({ children }) => {
 
   useEffect(() => {
     const SOCKET_URL = process.env.REACT_APP_SERVER_URL || 'http://localhost:5000';
+    logger.info('Connecting to socket server', { url: SOCKET_URL });
+
     socketRef.current = io(SOCKET_URL, { transports: ['websocket', 'polling'] });
 
-    socketRef.current.on('connect', () => setConnected(true));
-    socketRef.current.on('disconnect', () => setConnected(false));
+    socketRef.current.on('connect', () => {
+      setConnected(true);
+      logger.info('Socket connected', { socketId: socketRef.current.id, stableId });
+    });
+
+    socketRef.current.on('disconnect', (reason) => {
+      setConnected(false);
+      logger.warn('Socket disconnected', { reason });
+    });
+
+    socketRef.current.on('connect_error', (err) => {
+      logger.error('Socket connection error', { message: err.message });
+    });
+
+    socketRef.current.on('reconnect', (attempt) => {
+      logger.info('Socket reconnected', { attempt, newSocketId: socketRef.current.id });
+    });
+
+    socketRef.current.on('reconnect_attempt', (attempt) => {
+      logger.debug('Socket reconnect attempt', { attempt });
+    });
+
+    // Intercept ALL incoming events for tracing
+    socketRef.current.onAny((event, ...args) => {
+      logger.socket.on(event, args[0]);
+    });
 
     return () => {
+      logger.info('Disconnecting socket');
       socketRef.current?.disconnect();
     };
   }, []);

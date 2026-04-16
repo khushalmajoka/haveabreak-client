@@ -3,6 +3,7 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useSocket } from '../context/SocketContext';
 import toast from 'react-hot-toast';
 import AdBanner from '../components/AdBanner';
+import logger from '../utils/logger';
 
 export default function GamePage() {
   const { roomCode } = useParams();
@@ -27,11 +28,16 @@ export default function GamePage() {
   const timerRef = useRef(null);
   const inputRef = useRef(null);
 
+  useEffect(() => {
+    logger.info('GamePage mounted', { roomCode, myId, initialSubstring: location.state?.substring });
+  }, []);
+
   // Timer countdown
   useEffect(() => {
     if (gameOver) return;
     clearInterval(timerRef.current);
     setTimeLeft(timerDuration);
+    logger.debug('Timer reset', { timerDuration, currentPlayer: currentPlayer?.name });
 
     timerRef.current = setInterval(() => {
       setTimeLeft(t => {
@@ -47,6 +53,7 @@ export default function GamePage() {
     if (!socket) return;
 
     const onNextTurn = ({ currentPlayer, substring, players, timerDuration }) => {
+      logger.info('Next turn', { player: currentPlayer.name, substring, timerDuration });
       setCurrentPlayer(currentPlayer);
       setSubstring(substring);
       setPlayers(players);
@@ -56,12 +63,17 @@ export default function GamePage() {
     };
 
     const onWordAccepted = ({ playerName, word, substring }) => {
+      logger.info('Word accepted', { playerName, word, substring });
       setLastAction({ type: 'correct', msg: `${playerName}: "${word}"` });
     };
 
     const onTimeUp = ({ playerName, livesLeft, isEliminated }) => {
+      logger.warn('Time up', { playerName, livesLeft, isEliminated });
       clearInterval(timerRef.current);
-      setLastAction({ type: 'timeout', msg: `${playerName} ran out of time! ${isEliminated ? '💀 Eliminated!' : `${livesLeft} lives left`}` });
+      setLastAction({
+        type: 'timeout',
+        msg: `${playerName} ran out of time! ${isEliminated ? '💀 Eliminated!' : `${livesLeft} lives left`}`,
+      });
       setPlayers(ps => ps.map(p =>
         p.name === playerName ? { ...p, lives: livesLeft, isAlive: !isEliminated } : p
       ));
@@ -69,6 +81,7 @@ export default function GamePage() {
 
     const onWordResult = ({ success, reason }) => {
       if (!success) {
+        logger.warn('Word rejected', { reason });
         toast.error(reason, { duration: 2500 });
         setShake(true);
         setTimeout(() => setShake(false), 500);
@@ -76,6 +89,7 @@ export default function GamePage() {
     };
 
     const onGameOver = ({ winner, players }) => {
+      logger.info('Game over', { winner: winner?.name, totalPlayers: players.length });
       clearInterval(timerRef.current);
       setGameOver(true);
       setWinner(winner);
@@ -83,11 +97,15 @@ export default function GamePage() {
     };
 
     const onPlayerLeft = ({ playerName, players }) => {
+      logger.warn('Player left during game', { playerName, remainingPlayers: players.length });
       setPlayers(players);
       toast(`${playerName} disconnected`, { icon: '👋' });
     };
 
-    const onError = ({ message }) => toast.error(message);
+    const onError = ({ message }) => {
+      logger.error('Socket error in GamePage', { message });
+      toast.error(message);
+    };
 
     socket.on('next_turn', onNextTurn);
     socket.on('word_accepted', onWordAccepted);
@@ -110,11 +128,16 @@ export default function GamePage() {
 
   const submitWord = useCallback(() => {
     if (!input.trim() || !isMyTurn) return;
+    logger.info('Submitting word', { word: input.trim(), substring, roomCode });
+    logger.socket.emit('submit_word', { word: input.trim(), roomCode });
     socket.emit('submit_word', { roomCode, word: input.trim().toLowerCase() });
-  }, [input, isMyTurn, socket, roomCode]);
+  }, [input, isMyTurn, socket, roomCode, substring]);
 
   useEffect(() => {
-    if (isMyTurn) inputRef.current?.focus();
+    if (isMyTurn) {
+      logger.info('My turn started', { substring, timerDuration });
+      inputRef.current?.focus();
+    }
   }, [isMyTurn, currentPlayer]);
 
   const timerPercent = (timeLeft / timerDuration) * 100;
@@ -228,9 +251,7 @@ export default function GamePage() {
 
             {/* Input */}
             {isMyTurn && (
-              <div style={{
-                animation: shake ? 'shake 0.4s ease' : 'none',
-              }}>
+              <div style={{ animation: shake ? 'shake 0.4s ease' : 'none' }}>
                 <input
                   ref={inputRef}
                   value={input}
@@ -346,6 +367,10 @@ function PlayerChip({ player, isActive, isMe, colorIndex }) {
 function GameOverScreen({ winner, players, myId, onHome }) {
   const iWon = winner?.id === myId || winner?.socketId === myId;
   const sorted = [...players].sort((a, b) => b.lives - a.lives);
+
+  useEffect(() => {
+    logger.info('GameOverScreen shown', { winner: winner?.name, iWon });
+  }, []);
 
   return (
     <div style={{
