@@ -18,7 +18,7 @@ export default function RoomPage() {
     if (!socket) return;
 
     // Fetch room info
-    fetch(`/api/rooms/${roomCode}`)
+    fetch(`${BASE_URL}/api/rooms/${roomCode}`)
       .then(r => r.json())
       .then(data => {
         if (data.room) setRoom(data.room);
