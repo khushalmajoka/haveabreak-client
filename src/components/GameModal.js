@@ -26,7 +26,7 @@ export default function GameModal({ game, onClose, onNavigate }) {
       setLoading(false);
       localStorage.setItem('playerId', stableId);
       localStorage.setItem('playerName', playerName);
-      onNavigate(`/wordbomb/room/${roomCode}`);
+      onNavigate(`/${game.id}/room/${roomCode}`);
     };
 
     const handleRoomJoined = ({ roomCode, playerId }) => {
@@ -34,7 +34,7 @@ export default function GameModal({ game, onClose, onNavigate }) {
       setLoading(false);
       localStorage.setItem('playerId', stableId);
       localStorage.setItem('playerName', playerName);
-      onNavigate(`/wordbomb/room/${roomCode}`);
+      onNavigate(`/${game.id}/room/${roomCode}`);
     };
 
     const handleError = ({ message }) => {
@@ -43,32 +43,40 @@ export default function GameModal({ game, onClose, onNavigate }) {
       toast.error(message);
     };
 
-    socket.on('room_created', handleRoomCreated);
-    socket.on('room_joined', handleRoomJoined);
-    socket.on('error', handleError);
+    const createEvent = game.id === 'cardsbluff' ? 'bluff_room_created' : 'room_created';
+    const joinEvent   = game.id === 'cardsbluff' ? 'bluff_room_joined'   : 'room_joined';
+    const errorEvent  = game.id === 'cardsbluff' ? 'bluff_error'         : 'error';
+
+    socket.on(createEvent, handleRoomCreated);
+    socket.on(joinEvent,   handleRoomJoined);
+    socket.on(errorEvent,  handleError);
 
     return () => {
-      socket.off('room_created', handleRoomCreated);
-      socket.off('room_joined', handleRoomJoined);
-      socket.off('error', handleError);
+      socket.off(createEvent, handleRoomCreated);
+      socket.off(joinEvent,   handleRoomJoined);
+      socket.off(errorEvent,  handleError);
     };
   }, [socket, playerName, onNavigate, stableId]);
 
+  const isBluff = game.id === 'cardsbluff';
+
   const handleCreate = () => {
     if (!playerName.trim()) return toast.error('Enter your name first!');
-    logger.info('Emitting create_room', { playerName, settings, stableId });
+    logger.info('Emitting create_room', { game: game.id, playerName, settings, stableId });
     setLoading(true);
-    logger.socket.emit('create_room', { playerName: playerName.trim(), settings, playerId: stableId });
-    socket.emit('create_room', { playerName: playerName.trim(), settings, playerId: stableId });
+    const event = isBluff ? 'bluff_create_room' : 'create_room';
+    logger.socket.emit(event, { playerName: playerName.trim(), settings, playerId: stableId });
+    socket.emit(event, { playerName: playerName.trim(), settings, playerId: stableId });
   };
 
   const handleJoin = () => {
     if (!playerName.trim()) return toast.error('Enter your name first!');
     if (!roomCode.trim()) return toast.error('Enter a room code!');
-    logger.info('Emitting join_room', { roomCode, playerName, stableId });
+    logger.info('Emitting join_room', { game: game.id, roomCode, playerName, stableId });
     setLoading(true);
-    logger.socket.emit('join_room', { roomCode: roomCode.trim().toUpperCase(), playerName: playerName.trim(), playerId: stableId });
-    socket.emit('join_room', { roomCode: roomCode.trim().toUpperCase(), playerName: playerName.trim(), playerId: stableId });
+    const event = isBluff ? 'bluff_join_room' : 'join_room';
+    logger.socket.emit(event, { roomCode: roomCode.trim().toUpperCase(), playerName: playerName.trim(), playerId: stableId });
+    socket.emit(event, { roomCode: roomCode.trim().toUpperCase(), playerName: playerName.trim(), playerId: stableId });
   };
 
   return (

@@ -7,6 +7,8 @@ import Home          from './pages/Home';
 import RoomPage      from './pages/RoomPage';
 import GamePage      from './pages/GamePage';
 import JoinPage      from './pages/JoinPage';
+import BluffGamePage from './pages/BluffGamePage';
+import HowToPlay     from './pages/HowToPlay';
 import About         from './pages/About';
 import Contact       from './pages/Contact';
 import PrivacyPolicy from './pages/PrivacyPolicy';
@@ -37,21 +39,27 @@ export default function App() {
           {/* Home */}
           <Route path="/" element={<Home />} />
 
-          {/* ── Word Bomb routes ── */}
-          {/* Direct link share — shows join/spectate screen */}
-          <Route path="/wordbomb/:roomCode"        element={<JoinPage />} />
-          {/* Lobby (waiting room) */}
-          <Route path="/wordbomb/room/:roomCode"   element={<RoomPage />} />
-          {/* Live gameplay */}
-          <Route path="/wordbomb/game/:roomCode"   element={<GamePage />} />
+          {/* ── Word Bomb ── */}
+          <Route path="/wordbomb/:roomCode"       element={<JoinPage game="wordbomb" />} />
+          <Route path="/wordbomb/room/:roomCode"  element={<RoomPage />} />
+          <Route path="/wordbomb/game/:roomCode"  element={<GamePage />} />
 
-          {/* Static pages */}
+          {/* ── Cards Bluff ── */}
+          <Route path="/cardsbluff/:roomCode"     element={<JoinPage game="cardsbluff" />} />
+          <Route path="/cardsbluff/room/:roomCode" element={<BluffGamePage />} />
+          {/* Note: Cards Bluff has no separate lobby — game page handles waiting too */}
+
+          {/* ── How to Play ── */}
+          <Route path="/how-to-play"              element={<HowToPlay />} />
+          <Route path="/how-to-play/:game"        element={<HowToPlay />} />
+
+          {/* ── Static pages ── */}
           <Route path="/about"          element={<About />} />
           <Route path="/contact"        element={<Contact />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/terms"          element={<Terms />} />
 
-          {/* 404 — must be last */}
+          {/* 404 */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </SocketProvider>
