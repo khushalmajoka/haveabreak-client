@@ -110,12 +110,14 @@ export default function Home() {
           title="Live Games"
           games={liveGames}
           onSelect={(game) => setSelectedGame(game)}
+          onHowToPlay={(game) => navigate(`/how-to-play/${game.id}`)}
         />
 
         <GameRow
           title="Coming Soon"
           games={upcomingGames}
           onSelect={(game) => game.available && setSelectedGame(game)}
+          onHowToPlay={(game) => navigate(`/how-to-play/${game.id}`)}
         />
 
         {/* Inline Ad between content */}
@@ -197,7 +199,7 @@ export default function Home() {
   );
 }
 
-function GameRow({ title, games, onSelect }) {
+function GameRow({ title, games, onSelect, onHowToPlay }) {
   return (
     <section style={{ marginBottom: '34px' }}>
       <h2 style={{
@@ -224,6 +226,10 @@ function GameRow({ title, games, onSelect }) {
             key={game.id}
             game={game}
             onSelect={() => onSelect(game)}
+            onHowToPlay={(event) => {
+              event.stopPropagation();
+              onHowToPlay(game);
+            }}
           />
         ))}
       </div>
@@ -231,7 +237,7 @@ function GameRow({ title, games, onSelect }) {
   );
 }
 
-function GameCard({ game, onSelect }) {
+function GameCard({ game, onSelect, onHowToPlay }) {
   const [hovered, setHovered] = useState(false);
 
   return (
@@ -303,7 +309,7 @@ function GameCard({ game, onSelect }) {
 
       {/* Buttons */}
       {game.available ? (
-        <div style={{ display: 'flex', gap: '10px', marginTop: 'auto' }}>
+        <div style={{ display: 'flex', gap: '10px', marginTop: 'auto', flexWrap: 'wrap' }}>
           <button
             style={{
               flex: 1,
@@ -337,6 +343,31 @@ function GameCard({ game, onSelect }) {
             onMouseLeave={e => e.target.style.background = 'rgba(255,255,255,0.05)'}
           >
             → Join Room
+          </button>
+          <button
+            onClick={onHowToPlay}
+            aria-label={`How to play ${game.name}`}
+            style={{
+              flex: '1 0 100%',
+              padding: '10px',
+              background: 'rgba(255,255,255,0.04)',
+              border: `1px solid ${game.color}30`,
+              borderRadius: '8px',
+              color: 'var(--text-muted)',
+              fontWeight: 700,
+              fontSize: '13px',
+              transition: 'background 0.2s, color 0.2s',
+            }}
+            onMouseEnter={e => {
+              e.target.style.background = `${game.color}18`;
+              e.target.style.color = game.color;
+            }}
+            onMouseLeave={e => {
+              e.target.style.background = 'rgba(255,255,255,0.04)';
+              e.target.style.color = 'var(--text-muted)';
+            }}
+          >
+            How to Play
           </button>
         </div>
       ) : (

@@ -4,7 +4,6 @@ import { SITE_CONFIG } from '../config/config';
 
 const NAV_LINKS = [
   { to: '/',             label: 'Home' },
-  { to: '/how-to-play',  label: 'How to Play' },
   { to: '/about',        label: 'About' },
   { to: '/contact',      label: 'Contact' },
 ];
