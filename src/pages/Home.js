@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import AdBanner from '../components/AdBanner';
 import GameModal from '../components/GameModal';
 import { SITE_CONFIG } from "../config/config";
@@ -67,13 +67,15 @@ const GAMES = [
 export default function Home() {
   const [selectedGame, setSelectedGame] = useState(null);
   const navigate = useNavigate();
+  const liveGames = GAMES.filter((game) => game.available);
+  const upcomingGames = GAMES.filter((game) => !game.available);
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       {/* Top Ad */}
-      <div style={{ padding: '12px 20px', maxWidth: '900px', margin: '0 auto', width: '100%' }}>
+      {/* <div style={{ padding: '12px 20px', maxWidth: '900px', margin: '0 auto', width: '100%' }}>
         <AdBanner slot="top" />
-      </div>
+      </div> */}
 
       {/* Header */}
       <header style={{ padding: '24px 24px 0', textAlign: 'center' }}>
@@ -95,27 +97,26 @@ export default function Home() {
         </p>
       </header>
 
-      {/* Games Grid */}
+      {/* Games Rows */}
       <main style={{
         flex: 1,
-        maxWidth: '960px',
+        maxWidth: '1100px',
         margin: '0 auto',
         width: '100%',
         padding: '40px 20px',
+        overflow: 'hidden',
       }}>
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-          gap: '20px',
-        }}>
-          {GAMES.map((game) => (
-            <GameCard
-              key={game.id}
-              game={game}
-              onSelect={() => game.available && setSelectedGame(game)}
-            />
-          ))}
-        </div>
+        <GameRow
+          title="Live Games"
+          games={liveGames}
+          onSelect={(game) => setSelectedGame(game)}
+        />
+
+        <GameRow
+          title="Coming Soon"
+          games={upcomingGames}
+          onSelect={(game) => game.available && setSelectedGame(game)}
+        />
 
         {/* Inline Ad between content */}
         {/* <div style={{ marginTop: '40px' }}>
@@ -196,6 +197,40 @@ export default function Home() {
   );
 }
 
+function GameRow({ title, games, onSelect }) {
+  return (
+    <section style={{ marginBottom: '34px' }}>
+      <h2 style={{
+        fontSize: '18px',
+        fontWeight: 800,
+        marginBottom: '14px',
+        color: 'var(--text)',
+      }}>
+        {title}
+      </h2>
+
+      <div style={{
+        display: 'flex',
+        gap: '18px',
+        overflowX: 'auto',
+        overflowY: 'hidden',
+        padding: '4px 4px 18px',
+        scrollSnapType: 'x proximity',
+        scrollPaddingLeft: '4px',
+        WebkitOverflowScrolling: 'touch',
+      }}>
+        {games.map((game) => (
+          <GameCard
+            key={game.id}
+            game={game}
+            onSelect={() => onSelect(game)}
+          />
+        ))}
+      </div>
+    </section>
+  );
+}
+
 function GameCard({ game, onSelect }) {
   const [hovered, setHovered] = useState(false);
 
@@ -216,6 +251,11 @@ function GameCard({ game, onSelect }) {
         animation: 'fadeIn 0.4s ease both',
         position: 'relative',
         overflow: 'hidden',
+        flex: '0 0 clamp(260px, 32%, 330px)',
+        minHeight: '260px',
+        scrollSnapAlign: 'start',
+        display: 'flex',
+        flexDirection: 'column',
       }}
     >
       {/* Tag */}
@@ -252,18 +292,18 @@ function GameCard({ game, onSelect }) {
 
       {/* Description */}
       <p style={{
-        fontSize: '13px',
-        color: 'var(--text-muted)',
-        lineHeight: 1.6,
-        marginBottom: '20px',
-        opacity: game.available ? 1 : 0.6,
+          fontSize: '13px',
+          color: 'var(--text-muted)',
+          lineHeight: 1.6,
+          marginBottom: '20px',
+          opacity: game.available ? 1 : 0.6,
       }}>
         {game.description}
       </p>
 
       {/* Buttons */}
       {game.available ? (
-        <div style={{ display: 'flex', gap: '10px' }}>
+        <div style={{ display: 'flex', gap: '10px', marginTop: 'auto' }}>
           <button
             style={{
               flex: 1,
@@ -302,6 +342,7 @@ function GameCard({ game, onSelect }) {
       ) : (
         <div style={{
           padding: '10px',
+          marginTop: 'auto',
           textAlign: 'center',
           color: 'var(--text-muted)',
           fontSize: '12px',
