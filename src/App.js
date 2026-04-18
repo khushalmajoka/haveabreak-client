@@ -8,7 +8,6 @@ import RoomPage      from './pages/RoomPage';
 import GamePage      from './pages/GamePage';
 import JoinPage      from './pages/JoinPage';
 import BluffGamePage from './pages/BluffGamePage';
-import HowToPlay     from './pages/HowToPlay';
 import About         from './pages/About';
 import Contact       from './pages/Contact';
 import PrivacyPolicy from './pages/PrivacyPolicy';
@@ -48,10 +47,6 @@ export default function App() {
           <Route path="/cardsbluff/:roomCode"     element={<JoinPage game="cardsbluff" />} />
           <Route path="/cardsbluff/room/:roomCode" element={<BluffGamePage />} />
           {/* Note: Cards Bluff has no separate lobby — game page handles waiting too */}
-
-          {/* ── How to Play ── */}
-          <Route path="/how-to-play"              element={<HowToPlay />} />
-          <Route path="/how-to-play/:game"        element={<HowToPlay />} />
 
           {/* ── Static pages ── */}
           <Route path="/about"          element={<About />} />

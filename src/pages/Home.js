@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import AdBanner from '../components/AdBanner';
 import GameModal from '../components/GameModal';
+import { HOW_TO_PLAY_GAMES } from '../data/howToPlay';
 import { SITE_CONFIG } from "../config/config";
 
 const GAMES = [
@@ -66,6 +67,7 @@ const GAMES = [
 
 export default function Home() {
   const [selectedGame, setSelectedGame] = useState(null);
+  const [howToPlayGame, setHowToPlayGame] = useState(null);
   const navigate = useNavigate();
   const liveGames = GAMES.filter((game) => game.available);
   const upcomingGames = GAMES.filter((game) => !game.available);
@@ -110,14 +112,14 @@ export default function Home() {
           title="Live Games"
           games={liveGames}
           onSelect={(game) => setSelectedGame(game)}
-          onHowToPlay={(game) => navigate(`/how-to-play/${game.id}`)}
+          onHowToPlay={(game) => setHowToPlayGame(game.id)}
         />
 
         <GameRow
           title="Coming Soon"
           games={upcomingGames}
           onSelect={(game) => game.available && setSelectedGame(game)}
-          onHowToPlay={(game) => navigate(`/how-to-play/${game.id}`)}
+          onHowToPlay={(game) => setHowToPlayGame(game.id)}
         />
 
         {/* Inline Ad between content */}
@@ -193,6 +195,13 @@ export default function Home() {
           game={selectedGame}
           onClose={() => setSelectedGame(null)}
           onNavigate={(path) => navigate(path)}
+        />
+      )}
+
+      {howToPlayGame && (
+        <HowToPlayModal
+          gameId={howToPlayGame}
+          onClose={() => setHowToPlayGame(null)}
         />
       )}
     </div>
@@ -385,6 +394,201 @@ function GameCard({ game, onSelect, onHowToPlay }) {
           Coming Soon
         </div>
       )}
+    </div>
+  );
+}
+
+function HowToPlayModal({ gameId, onClose }) {
+  const game = HOW_TO_PLAY_GAMES[gameId];
+
+  useEffect(() => {
+    const onKeyDown = (event) => {
+      if (event.key === 'Escape') onClose();
+    };
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', onKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener('keydown', onKeyDown);
+    };
+  }, [onClose]);
+
+  if (!game) return null;
+
+  return (
+    <div
+      onClick={onClose}
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 1200,
+        background: 'rgba(0,0,0,0.78)',
+        backdropFilter: 'blur(8px)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '20px',
+        animation: 'fadeIn 0.2s ease',
+      }}
+    >
+      <div
+        onClick={(event) => event.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="how-to-play-title"
+        style={{
+          width: '100%',
+          maxWidth: '760px',
+          maxHeight: '86vh',
+          overflowY: 'auto',
+          background: 'var(--bg-card)',
+          border: `1px solid ${game.color}40`,
+          borderRadius: '16px',
+          padding: '24px',
+          boxShadow: '0 24px 80px rgba(0,0,0,0.55)',
+          animation: 'bounce-in 0.28s ease',
+        }}
+      >
+        <div style={{ display: 'flex', justifyContent: 'space-between', gap: '16px', alignItems: 'flex-start', marginBottom: '22px' }}>
+          <div style={{ display: 'flex', gap: '14px', alignItems: 'center' }}>
+            <div style={{ fontSize: '42px' }}>{game.emoji}</div>
+            <div>
+              <div style={{ fontSize: '11px', fontWeight: 800, color: 'var(--text-muted)', letterSpacing: '0.08em', marginBottom: '5px' }}>
+                HOW TO PLAY
+              </div>
+              <h2 id="how-to-play-title" style={{ fontSize: '24px', fontWeight: 800, color: game.color, marginBottom: '4px' }}>
+                {game.name}
+              </h2>
+              <p style={{ color: 'var(--text-muted)', fontSize: '14px', lineHeight: 1.6 }}>
+                {game.tagline}
+              </p>
+            </div>
+          </div>
+
+          <button
+            onClick={onClose}
+            aria-label="Close how to play"
+            style={{
+              width: '34px',
+              height: '34px',
+              flexShrink: 0,
+              background: 'rgba(255,255,255,0.06)',
+              border: '1px solid var(--border)',
+              borderRadius: '8px',
+              color: 'var(--text-muted)',
+              fontSize: '18px',
+              cursor: 'pointer',
+            }}
+          >
+            x
+          </button>
+        </div>
+
+        {game.sections.map(section => (
+          <section key={section.title} style={{ marginBottom: '24px' }}>
+            <h3 style={{ fontSize: '15px', fontWeight: 800, marginBottom: '10px', color: '#f0f0f5' }}>
+              {section.title}
+            </h3>
+            {section.body && (
+              <p style={{ color: 'var(--text-muted)', fontSize: '14px', lineHeight: 1.75 }}>
+                {section.body}
+              </p>
+            )}
+            {section.steps && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                {section.steps.map((step, index) => (
+                  <div key={step} style={{
+                    display: 'flex',
+                    gap: '12px',
+                    alignItems: 'flex-start',
+                    padding: '10px 14px',
+                    background: 'rgba(255,255,255,0.025)',
+                    border: '1px solid var(--border)',
+                    borderRadius: '8px',
+                  }}>
+                    <span style={{
+                      width: '22px',
+                      height: '22px',
+                      borderRadius: '50%',
+                      flexShrink: 0,
+                      background: `${game.color}18`,
+                      border: `1px solid ${game.color}30`,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '11px',
+                      fontWeight: 800,
+                      color: game.color,
+                    }}>
+                      {index + 1}
+                    </span>
+                    <span style={{ color: 'var(--text-muted)', fontSize: '14px', lineHeight: 1.55 }}>
+                      {step}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+        ))}
+
+        {game.example && (
+          <section style={{ marginBottom: '6px' }}>
+            <h3 style={{ fontSize: '15px', fontWeight: 800, marginBottom: '10px' }}>
+              {game.example.title}
+            </h3>
+            <div style={{
+              border: `1px solid ${game.color}25`,
+              borderRadius: '10px',
+              overflow: 'hidden',
+            }}>
+              {game.example.steps.map((step, index) => (
+                <div key={`${step.player || 'step'}-${index}`} style={{
+                  display: 'flex',
+                  gap: '10px',
+                  alignItems: 'center',
+                  padding: '11px 12px',
+                  borderBottom: index < game.example.steps.length - 1 ? '1px solid var(--border)' : 'none',
+                  background: index % 2 === 0 ? 'rgba(255,255,255,0.015)' : 'transparent',
+                  flexWrap: 'wrap',
+                }}>
+                  {step.player && (
+                    <span style={{ fontWeight: 800, fontSize: '13px', color: game.color }}>
+                      {step.player}
+                    </span>
+                  )}
+                  {(step.word || step.action) && (
+                    <span style={{
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: '12px',
+                      background: 'rgba(255,255,255,0.06)',
+                      borderRadius: '6px',
+                      padding: '3px 8px',
+                      color: '#fff',
+                    }}>
+                      {step.word || step.action}
+                    </span>
+                  )}
+                  {step.claim && (
+                    <span style={{ fontSize: '12px', color: game.color }}>{step.claim}</span>
+                  )}
+                  {step.substring && (
+                    <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
+                      substring: <span style={{ fontFamily: 'var(--font-mono)', color: game.color }}>{step.substring}</span>
+                    </span>
+                  )}
+                  <span style={{ fontSize: '12px', color: 'var(--text-muted)', marginLeft: 'auto' }}>
+                    {step.note}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+      </div>
     </div>
   );
 }
