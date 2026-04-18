@@ -141,7 +141,7 @@ export default function Contact() {
           </button>
         </div>
 
-        <AdBanner slot="inline" style={{ marginTop: '32px' }} />
+        {/* <AdBanner slot="inline" style={{ marginTop: '32px' }} /> */}
 
         {/* Direct contact info */}
         <div style={{

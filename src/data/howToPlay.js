@@ -55,7 +55,7 @@ export const HOW_TO_PLAY_GAMES = {
       title: 'Example Round',
       steps: [
         { player: 'Player 1', substring: 'OU', word: 'compound ✓', note: 'Valid, contains "ou"' },
-        { player: 'Player 2', substring: 'MP', word: 'example ✗', note: 'Invalid, "example" has no "mp"' },
+        { player: 'Player 2', substring: 'MP', word: 'mapping ✗', note: 'Invalid, "mapping" has no "mp"' },
         { player: 'Player 2', note: 'Loses 1 life!' },
         { player: 'Player 3', substring: 'ST', word: 'castle ✓', note: 'Valid, contains "st"' },
       ],

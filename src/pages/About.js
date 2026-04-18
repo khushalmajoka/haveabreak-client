@@ -35,7 +35,7 @@ export default function About() {
           </p>
         </Section>
 
-        <AdBanner slot="inline" style={{ marginBottom: '40px' }} />
+        {/* <AdBanner slot="inline" style={{ marginBottom: '40px' }} /> */}
 
         {/* Games */}
         <Section label="Our Games">
