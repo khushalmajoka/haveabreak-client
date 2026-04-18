@@ -198,7 +198,7 @@ export default function JoinPage() {
 
       {/* ── Join form ── */}
       {mode === 'join' && (
-        <div style={{ width: '100%', maxWidth: '360px' }}>
+        <div style={{ width: '100%', maxWidth: '450px' }}>
           <label style={labelStyle}>YOUR NAME</label>
           <input
             value={playerName}
@@ -218,7 +218,7 @@ export default function JoinPage() {
 
       {/* ── Spectate confirm ── */}
       {mode === 'spectate' && (
-        <div style={{ width: '100%', maxWidth: '360px', textAlign: 'center' }}>
+        <div style={{ width: '100%', maxWidth: '450px', textAlign: 'center' }}>
           <div style={{
             background: 'rgba(124,58,237,0.08)',
             border: '1px solid rgba(124,58,237,0.2)',
