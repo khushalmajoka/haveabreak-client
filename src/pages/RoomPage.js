@@ -4,6 +4,7 @@ import { useSocket } from '../context/SocketContext';
 import toast from 'react-hot-toast';
 import AdBanner from '../components/AdBanner';
 import { BASE_URL } from '../config/config';
+import ShareButton from '../components/ShareButton';
 
 export default function RoomPage() {
   const { roomCode } = useParams();
@@ -39,7 +40,7 @@ export default function RoomPage() {
       setRoom(r => r ? { ...r, settings, players } : r);
     };
     const onGameStarted = (data) => {
-      navigate(`/game/${roomCode}`, { state: data });
+      navigate(`/wordbomb/game/${roomCode}`, { state: data });
     };
     const onError = ({ message }) => toast.error(message);
 
@@ -104,22 +105,10 @@ export default function RoomPage() {
           }}>
             {roomCode}
           </span>
-          <button
-            onClick={copyCode}
-            style={{
-              background: copied ? 'rgba(34,211,160,0.15)' : 'rgba(255,255,255,0.06)',
-              border: `1px solid ${copied ? 'rgba(34,211,160,0.4)' : 'var(--border)'}`,
-              borderRadius: '8px', color: copied ? 'var(--green)' : 'var(--text-muted)',
-              padding: '8px 14px', fontSize: '12px', fontWeight: 600,
-              transition: 'all 0.2s',
-            }}
-          >
-            {copied ? '✓ Copied!' : '📋 Copy'}
-          </button>
         </div>
-        <p style={{ color: 'var(--text-muted)', fontSize: '13px', marginTop: '8px' }}>
-          Share this code with friends to join
-        </p>
+        <div style={{ marginTop: '14px' }}>
+          <ShareButton roomCode={roomCode} game="wordbomb" />
+        </div>
       </div>
 
       {/* Settings (host view) */}

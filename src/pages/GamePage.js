@@ -3,6 +3,7 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useSocket } from '../context/SocketContext';
 import toast from 'react-hot-toast';
 import AdBanner from '../components/AdBanner';
+import ShareButton from '../components/ShareButton';
 import logger from '../utils/logger';
 
 export default function GamePage() {
@@ -23,7 +24,8 @@ export default function GamePage() {
   const [shake, setShake] = useState(false);
 
   const myId = localStorage.getItem('stablePlayerId');
-  const isMyTurn = currentPlayer?.id === myId || currentPlayer?.socketId === myId;
+  const isSpectator = location.state?.spectator === true;
+  const isMyTurn = !isSpectator && (currentPlayer?.id === myId || currentPlayer?.socketId === myId);
 
   const timerRef = useRef(null);
   const inputRef = useRef(null);
@@ -153,12 +155,22 @@ export default function GamePage() {
       {/* <AdBanner slot="top" style={{ marginBottom: '16px' }} /> */}
 
       {/* Room Code Bar */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-        <div style={{ fontSize: '12px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
-          Room: <span style={{ color: '#ff4d6d' }}>{roomCode}</span>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '8px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div style={{ fontSize: '12px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+            Room: <span style={{ color: '#ff4d6d' }}>{roomCode}</span>
+          </div>
+          {isSpectator && (
+            <span style={{
+              fontSize: '10px', fontWeight: 700, letterSpacing: '0.06em',
+              background: 'rgba(124,58,237,0.15)', border: '1px solid rgba(124,58,237,0.3)',
+              color: '#a78bfa', borderRadius: '20px', padding: '2px 8px',
+            }}>👁️ SPECTATING</span>
+          )}
         </div>
-        <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
-          💣 Word Bomb
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <ShareButton roomCode={roomCode} game="wordbomb" />
+          <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>💣 Word Bomb</div>
         </div>
       </div>
 

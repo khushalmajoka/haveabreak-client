@@ -26,7 +26,7 @@ export default function GameModal({ game, onClose, onNavigate }) {
       setLoading(false);
       localStorage.setItem('playerId', stableId);
       localStorage.setItem('playerName', playerName);
-      onNavigate(`/room/${roomCode}`);
+      onNavigate(`/wordbomb/room/${roomCode}`);
     };
 
     const handleRoomJoined = ({ roomCode, playerId }) => {
@@ -34,7 +34,7 @@ export default function GameModal({ game, onClose, onNavigate }) {
       setLoading(false);
       localStorage.setItem('playerId', stableId);
       localStorage.setItem('playerName', playerName);
-      onNavigate(`/room/${roomCode}`);
+      onNavigate(`/wordbomb/room/${roomCode}`);
     };
 
     const handleError = ({ message }) => {

@@ -1,16 +1,17 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { SocketProvider } from './context/SocketContext';
 
-import Home         from './pages/Home';
-import RoomPage     from './pages/RoomPage';
-import GamePage     from './pages/GamePage';
-import About        from './pages/About';
-import Contact      from './pages/Contact';
+import Home          from './pages/Home';
+import RoomPage      from './pages/RoomPage';
+import GamePage      from './pages/GamePage';
+import JoinPage      from './pages/JoinPage';
+import About         from './pages/About';
+import Contact       from './pages/Contact';
 import PrivacyPolicy from './pages/PrivacyPolicy';
-import Terms        from './pages/Terms';
-import NotFound     from './pages/NotFound';
+import Terms         from './pages/Terms';
+import NotFound      from './pages/NotFound';
 
 import './index.css';
 
@@ -33,10 +34,16 @@ export default function App() {
           }}
         />
         <Routes>
-          {/* Game routes */}
-          <Route path="/"              element={<Home />} />
-          <Route path="/room/:roomCode" element={<RoomPage />} />
-          <Route path="/game/:roomCode" element={<GamePage />} />
+          {/* Home */}
+          <Route path="/" element={<Home />} />
+
+          {/* ── Word Bomb routes ── */}
+          {/* Direct link share — shows join/spectate screen */}
+          <Route path="/wordbomb/:roomCode"        element={<JoinPage />} />
+          {/* Lobby (waiting room) */}
+          <Route path="/wordbomb/room/:roomCode"   element={<RoomPage />} />
+          {/* Live gameplay */}
+          <Route path="/wordbomb/game/:roomCode"   element={<GamePage />} />
 
           {/* Static pages */}
           <Route path="/about"          element={<About />} />
