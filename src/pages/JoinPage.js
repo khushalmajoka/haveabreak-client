@@ -5,10 +5,14 @@ import toast from 'react-hot-toast';
 import logger from '../utils/logger';
 import { BASE_URL, SITE_CONFIG } from '../config/config';
 
-export default function JoinPage() {
+export default function JoinPage({ game = 'wordbomb' }) {
   const { roomCode } = useParams();
   const navigate = useNavigate();
   const { socket, stableId } = useSocket();
+  const isBluff = game === 'cardsbluff';
+  const gameMeta = isBluff
+    ? { name: 'Cards Bluff', icon: 'Cards', color: '#7c3aed' }
+    : { name: 'Word Bomb', icon: 'Bomb', color: '#ff4d6d' };
 
   const [roomInfo, setRoomInfo]   = useState(null);   // { playerCount, status, joinable }
   const [checking, setChecking]   = useState(true);   // fetching room info
@@ -21,6 +25,24 @@ export default function JoinPage() {
   useEffect(() => {
     if (!roomCode) return;
     logger.info('JoinPage: checking room', { roomCode });
+
+    if (isBluff) {
+      if (!socket) return;
+
+      const onCheckResult = (data) => {
+        logger.info('JoinPage: bluff room check result', data);
+        if (!data.exists) { setNotFound(true); }
+        else { setRoomInfo(data); }
+        setChecking(false);
+      };
+
+      setChecking(true);
+      setNotFound(false);
+      socket.on('bluff_check_result', onCheckResult);
+      socket.emit('bluff_check_room', { roomCode });
+
+      return () => socket.off('bluff_check_result', onCheckResult);
+    }
 
     fetch(`${BASE_URL}/api/rooms/check`, {
       method: 'POST',
@@ -35,7 +57,7 @@ export default function JoinPage() {
         setChecking(false);
       })
       .catch(() => { setNotFound(true); setChecking(false); });
-  }, [roomCode]);
+  }, [roomCode, isBluff, socket]);
 
   // ── 2. Socket listeners ──────────────────────────────────────────────────
   useEffect(() => {
@@ -46,12 +68,16 @@ export default function JoinPage() {
       localStorage.setItem('playerId', stableId);
       localStorage.setItem('playerName', playerName);
       logger.info('Joined room, navigating to lobby', { roomCode: rc });
-      navigate(`/wordbomb/room/${rc}`);
+      navigate(`/${game}/room/${rc}`);
     };
 
     const onSpectateJoined = ({ roomCode: rc, status }) => {
       setLoading(false);
       logger.info('Spectating room', { roomCode: rc, status });
+      if (isBluff) {
+        navigate(`/cardsbluff/room/${rc}`, { state: { spectator: true } });
+        return;
+      }
       // Spectators go straight to the appropriate page
       if (status === 'playing') navigate(`/wordbomb/game/${rc}`, { state: { spectator: true } });
       else navigate(`/wordbomb/room/${rc}`, { state: { spectator: true } });
@@ -63,23 +89,27 @@ export default function JoinPage() {
       logger.error('JoinPage socket error', { message });
     };
 
-    socket.on('room_joined',    onRoomJoined);
-    socket.on('spectate_joined', onSpectateJoined);
-    socket.on('error',          onError);
+    const joinEvent = isBluff ? 'bluff_room_joined' : 'room_joined';
+    const spectateEvent = isBluff ? 'bluff_spectate_joined' : 'spectate_joined';
+    const errorEvent = isBluff ? 'bluff_error' : 'error';
+
+    socket.on(joinEvent,     onRoomJoined);
+    socket.on(spectateEvent, onSpectateJoined);
+    socket.on(errorEvent,    onError);
 
     return () => {
-      socket.off('room_joined',    onRoomJoined);
-      socket.off('spectate_joined', onSpectateJoined);
-      socket.off('error',          onError);
+      socket.off(joinEvent,     onRoomJoined);
+      socket.off(spectateEvent, onSpectateJoined);
+      socket.off(errorEvent,    onError);
     };
-  }, [socket, playerName, stableId, navigate]);
+  }, [socket, playerName, stableId, navigate, game, isBluff]);
 
   // ── 3. Handlers ──────────────────────────────────────────────────────────
   const handleJoin = () => {
     if (!playerName.trim()) return toast.error('Enter your name first!');
     setLoading(true);
     logger.info('Joining room from JoinPage', { roomCode, playerName, stableId });
-    socket.emit('join_room', {
+    socket.emit(isBluff ? 'bluff_join_room' : 'join_room', {
       roomCode: roomCode.toUpperCase(),
       playerName: playerName.trim(),
       playerId: stableId,
@@ -89,7 +119,7 @@ export default function JoinPage() {
   const handleSpectate = () => {
     setLoading(true);
     logger.info('Spectating room', { roomCode, stableId });
-    socket.emit('spectate_room', {
+    socket.emit(isBluff ? 'bluff_spectate' : 'spectate_room', {
       roomCode: roomCode.toUpperCase(),
       playerId: stableId,
     });
@@ -133,10 +163,10 @@ export default function JoinPage() {
         marginBottom: '28px',
       }}>
         <span style={{ fontSize: '20px' }}>💣</span>
-        <span style={{ fontSize: '13px', color: 'var(--text-muted)' }}>Word Bomb</span>
+        <span style={{ fontSize: '13px', color: 'var(--text-muted)' }}>{gameMeta.name}</span>
         <span style={{
           fontFamily: 'var(--font-mono)', fontWeight: 800,
-          fontSize: '15px', color: '#ff4d6d', letterSpacing: '0.1em',
+          fontSize: '15px', color: gameMeta.color, letterSpacing: '0.1em',
         }}>{roomCode}</span>
         <StatusDot status={roomInfo?.status} />
       </div>
@@ -157,7 +187,7 @@ export default function JoinPage() {
               emoji="🎮"
               title="Join & Play"
               desc="Enter the lobby and play with others"
-              color="#ff4d6d"
+              color={gameMeta.color}
               onClick={() => setMode('join')}
             />
           )}
@@ -209,7 +239,7 @@ export default function JoinPage() {
             autoFocus
             style={inputStyle}
           />
-          <Btn onClick={handleJoin} primary disabled={loading} style={{ marginTop: '12px' }}>
+          <Btn onClick={handleJoin} primary color={gameMeta.color} disabled={loading} style={{ marginTop: '12px' }}>
             {loading ? 'Joining…' : '🎮 Join Room'}
           </Btn>
           <Btn onClick={() => setMode(null)} style={{ marginTop: '8px' }}>← Back</Btn>
