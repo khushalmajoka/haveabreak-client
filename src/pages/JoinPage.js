@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useSocket } from '../context/SocketContext';
 import toast from 'react-hot-toast';
 import logger from '../utils/logger';
-import { SITE_CONFIG } from '../config/config';
+import { BASE_URL, SITE_CONFIG } from '../config/config';
 
 export default function JoinPage() {
   const { roomCode } = useParams();
@@ -22,7 +22,7 @@ export default function JoinPage() {
     if (!roomCode) return;
     logger.info('JoinPage: checking room', { roomCode });
 
-    fetch(`/api/rooms/check`, {
+    fetch(`${BASE_URL}/api/rooms/check`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ roomCode }),
