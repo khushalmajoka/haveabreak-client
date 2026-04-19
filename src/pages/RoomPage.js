@@ -200,13 +200,7 @@ export default function RoomPage() {
           >
             ⚙️ GAME SETTINGS
           </div>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr 1fr",
-              gap: "12px",
-            }}
-          >
+          <div className="settings-grid">
             <SettingControl
               label="Lives"
               value={room.settings.maxLives}

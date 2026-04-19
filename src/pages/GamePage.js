@@ -208,31 +208,13 @@ export default function GamePage() {
   }
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        maxWidth: "800px",
-        margin: "0 auto",
-        padding: "16px",
-      }}
-    >
+    <div className="page-wrap">
       <DisconnectBanner connected={connected} />
       {/* Top Ad */}
       {/* <AdBanner slot="top" style={{ marginBottom: '16px' }} /> */}
 
       {/* Room Code Bar */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "16px",
-          flexWrap: "wrap",
-          gap: "8px",
-        }}
-      >
+      <div className="top-bar">
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
           <div
             style={{
@@ -276,15 +258,7 @@ export default function GamePage() {
 
         <div style={{ flex: 1 }}>
           {/* Players */}
-          <div
-            style={{
-              display: "flex",
-              flexWrap: "wrap",
-              gap: "8px",
-              marginBottom: "20px",
-              justifyContent: "center",
-            }}
-          >
+          <div className="players-row">
             {players.map((player, i) => (
               <PlayerChip
                 key={player.id || i}
@@ -415,19 +389,7 @@ export default function GamePage() {
                 <button
                   onClick={submitWord}
                   disabled={!connected}
-                  style={{
-                    width: "100%",
-                    padding: "13px",
-                    background: "linear-gradient(135deg, #ff4d6d, #ff8c42)",
-                    border: "none",
-                    borderRadius: "10px",
-                    color: "#fff",
-                    fontWeight: 800,
-                    fontSize: "15px",
-                    letterSpacing: "0.03em",
-                    opacity: connected ? 1 : 0.5,
-                    cursor: connected ? "pointer" : "not-allowed",
-                  }}
+                  className="btn-primary"
                 >
                   {connected ? "Submit Word →" : "Reconnecting…"}
                 </button>

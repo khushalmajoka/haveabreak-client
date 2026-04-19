@@ -112,21 +112,21 @@ export default function BluffGamePage() {
         playerId: stableId,
       });
     }
-    
-      // Auto-rejoin after reconnect so server has the updated socketId
-      const handleReconnect = () => {
-        logger.info("[Bluff] Rejoining room after reconnect", {
-          roomCode,
-          stableId,
-        });
-        socket.emit("bluff_join_room", {
-          roomCode,
-          playerName: localStorage.getItem("playerName") || "Player",
-          playerId: stableId,
-        });
-      };
 
-      window.addEventListener("socket:reconnected", handleReconnect);
+    // Auto-rejoin after reconnect so server has the updated socketId
+    const handleReconnect = () => {
+      logger.info("[Bluff] Rejoining room after reconnect", {
+        roomCode,
+        stableId,
+      });
+      socket.emit("bluff_join_room", {
+        roomCode,
+        playerName: localStorage.getItem("playerName") || "Player",
+        playerId: stableId,
+      });
+    };
+
+    window.addEventListener("socket:reconnected", handleReconnect);
 
     const onState = (state) => {
       logger.debug("[Bluff] State update", {
@@ -350,7 +350,7 @@ export default function BluffGamePage() {
           {isSpectator && <SpectatorBadge />}
         </div>
         <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
-          <button onClick={() => setShowHowToPlay(true)} style={ghostBtn}>
+          <button onClick={() => setShowHowToPlay(true)} className="btn-ghost">
             ❓ How to Play
           </button>
           <ShareButton roomCode={roomCode} game="cardsbluff" />
@@ -384,16 +384,9 @@ export default function BluffGamePage() {
         ))}
       </div>
 
-      <div
-        style={{
-          display: "flex",
-          gap: "16px",
-          flex: 1,
-          alignItems: "flex-start",
-        }}
-      >
+      <div className="bluff-layout">
         {/* ── Left: Main play area ── */}
-        <div style={{ flex: 1 }}>
+        <div className="bluff-main">
           {/* Pile + last claim */}
           <PileDisplay
             gameState={gameState}
@@ -482,19 +475,7 @@ export default function BluffGamePage() {
         </div>
 
         {/* ── Right: Game log ── */}
-        <div
-          style={{
-            width: "220px",
-            flexShrink: 0,
-            background: "var(--bg-card)",
-            border: "1px solid var(--border)",
-            borderRadius: "16px",
-            padding: "14px",
-            display: "flex",
-            flexDirection: "column",
-            maxHeight: "480px",
-          }}
-        >
+        <div className="bluff-log">
           <div
             style={{
               fontSize: "11px",
@@ -1131,7 +1112,8 @@ function PlayArea({
       {lastClaim && (
         <button
           onClick={onPass}
-          style={{ ...ghostBtn, width: "100%", marginTop: "8px" }}
+          className="btn-ghost"
+          style={{ width: "100%", marginTop: "8px" }}
         >
           ⏭️ Pass
         </button>
@@ -1869,15 +1851,3 @@ function SpectatorBadge() {
     </span>
   );
 }
-
-const ghostBtn = {
-  padding: "7px 14px",
-  background: "rgba(255,255,255,0.05)",
-  border: "1px solid var(--border)",
-  borderRadius: "8px",
-  color: "var(--text-muted)",
-  fontSize: "12px",
-  fontWeight: 600,
-  cursor: "pointer",
-  fontFamily: "var(--font-display)",
-};

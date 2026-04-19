@@ -96,3 +96,275 @@ input {
   from { transform: rotate(0deg); }
   to   { transform: rotate(360deg); }
 }
+
+/* ── Utility classes ─────────────────────────────────────────────────────────
+   Replace repeated inline style objects across all page files.
+   Use these instead of copy-pasting style={{}} blocks.
+────────────────────────────────────────────────────────────────────────────── */
+
+/* Cards / panels */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+}
+
+.card-purple {
+  background: var(--bg-card);
+  border: 1px solid rgba(124,58,237,0.25);
+  border-radius: var(--radius);
+  padding: 20px;
+}
+
+.card-danger {
+  background: var(--bg-card);
+  border: 1px solid rgba(255,77,109,0.25);
+  border-radius: var(--radius);
+  padding: 20px;
+}
+
+/* Buttons */
+.btn-primary {
+  width: 100%;
+  padding: 13px;
+  background: linear-gradient(135deg, #ff4d6d, #ff8c42);
+  border: none;
+  border-radius: 12px;
+  color: #fff;
+  font-weight: 800;
+  font-size: 15px;
+  cursor: pointer;
+  font-family: var(--font-display);
+  transition: opacity 0.2s;
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-primary-purple {
+  width: 100%;
+  padding: 13px;
+  background: linear-gradient(135deg, #7c3aed, #a855f7);
+  border: none;
+  border-radius: 12px;
+  color: #fff;
+  font-weight: 800;
+  font-size: 15px;
+  cursor: pointer;
+  font-family: var(--font-display);
+  transition: opacity 0.2s;
+}
+
+.btn-primary-purple:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-ghost {
+  padding: 7px 14px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--font-display);
+  transition: background 0.15s;
+}
+
+.btn-ghost:hover {
+  background: rgba(255,255,255,0.09);
+}
+
+.btn-ghost-full {
+  /* Same as ghost but full width */
+  width: 100%;
+  padding: 12px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  font-family: var(--font-display);
+  transition: background 0.15s;
+}
+
+.btn-ghost-full:hover {
+  background: rgba(255,255,255,0.05);
+}
+
+/* Badges / pills */
+.badge-host {
+  font-size: 10px;
+  background: rgba(255,77,109,0.15);
+  color: #ff4d6d;
+  border: 1px solid rgba(255,77,109,0.3);
+  border-radius: 20px;
+  padding: 2px 8px;
+  font-weight: 700;
+}
+
+.badge-spectator {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  background: rgba(124,58,237,0.15);
+  border: 1px solid rgba(124,58,237,0.3);
+  color: #a78bfa;
+  border-radius: 20px;
+  padding: 2px 8px;
+}
+
+.badge-live {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  background: rgba(34,211,160,0.15);
+  border: 1px solid rgba(34,211,160,0.3);
+  color: #22d3a0;
+  border-radius: 20px;
+  padding: 2px 8px;
+}
+
+.badge-soon {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  border-radius: 20px;
+  padding: 2px 8px;
+}
+
+/* Page wrapper — max width centered, used on every game page */
+.page-wrap {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.page-wrap-wide {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+/* Top bar — room code row used in GamePage and BluffGamePage */
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* Room code label */
+.room-code-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+/* Section label — "PLAYERS (3/8)", "⚙️ GAME SETTINGS" etc */
+.section-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
+  margin-bottom: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+/* ── Responsive layout ───────────────────────────────────────────────────────
+   This is the main reason to move away from inline styles.
+   None of this is possible with style={{}} props.
+────────────────────────────────────────────────────────────────────────────── */
+
+/* BluffGamePage: side-by-side layout on desktop, stacked on mobile */
+.bluff-layout {
+  display: flex;
+  gap: 16px;
+  flex: 1;
+  align-items: flex-start;
+}
+
+.bluff-main {
+  flex: 1;
+  min-width: 0; /* prevents flex children from overflowing */
+}
+
+.bluff-log {
+  width: 220px;
+  flex-shrink: 0;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  max-height: 480px;
+}
+
+/* Settings grid — 3 cols on desktop, 1 on mobile */
+.settings-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+}
+
+/* Players row */
+.players-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+  justify-content: center;
+}
+
+@media (max-width: 600px) {
+  .page-wrap,
+  .page-wrap-wide {
+    padding: 10px;
+  }
+
+  /* Stack the game log below the play area on mobile */
+  .bluff-layout {
+    flex-direction: column;
+  }
+
+  .bluff-log {
+    width: 100%;
+    max-height: 200px;
+  }
+
+  /* Settings: 2 cols on mobile instead of 3 */
+  .settings-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  /* Top bar wraps tightly on small screens */
+  .top-bar {
+    gap: 6px;
+  }
+}
+
+@media (max-width: 400px) {
+  /* Very small phones: single column settings */
+  .settings-grid {
+    grid-template-columns: 1fr;
+  }
+}
