@@ -5,9 +5,9 @@ import toast from 'react-hot-toast';
 import ShareButton from '../components/ShareButton';
 import logger from '../utils/logger';
 
-const RANKS = ['2','3','4','5','6','7','8','9','10','J','Q','K','A'];
+
+import { RANKS, SUIT_COLOR } from '../constants/cardConstants';
 const RANK_ORDER = { '2':2,'3':3,'4':4,'5':5,'6':6,'7':7,'8':8,'9':9,'10':10,'J':11,'Q':12,'K':13,'A':14 };
-const SUIT_COLOR = { '♠': '#e0e0f0', '♣': '#e0e0f0', '♥': '#ff6b6b', '♦': '#ff6b6b' };
 
 // ── Animation keyframes injected once ────────────────────────────────────────
 const ANIM_CSS = `
