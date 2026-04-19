@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import AdBanner from "../components/AdBanner";
 import GameModal from "../components/GameModal";
 import { HOW_TO_PLAY_GAMES } from "../data/howToPlay";
 import { SITE_CONFIG } from "../config/config";
@@ -17,11 +16,6 @@ export default function Home() {
     <div
       style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}
     >
-      {/* Top Ad */}
-      {/* <div style={{ padding: '12px 20px', maxWidth: '900px', margin: '0 auto', width: '100%' }}>
-        <AdBanner slot="top" />
-      </div> */}
-
       {/* Header */}
       <header style={{ padding: "24px 24px 0", textAlign: "center" }}>
         <div
@@ -83,17 +77,7 @@ export default function Home() {
           onSelect={(game) => game.available && setSelectedGame(game)}
           onHowToPlay={(game) => setHowToPlayGame(game.id)}
         />
-
-        {/* Inline Ad between content */}
-        {/* <div style={{ marginTop: '40px' }}>
-          <AdBanner slot="inline" />
-        </div> */}
       </main>
-
-      {/* Bottom Ad */}
-      {/* <div style={{ padding: '12px 20px', maxWidth: '900px', margin: '0 auto', width: '100%' }}>
-        <AdBanner slot="bottom" />
-      </div> */}
 
       {/* Footer */}
       <footer

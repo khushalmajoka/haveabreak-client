@@ -2,7 +2,6 @@ import React, { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useSocket } from "../context/SocketContext";
 import toast from "react-hot-toast";
-import AdBanner from "../components/AdBanner";
 import ShareButton from "../components/ShareButton";
 import { HOW_TO_PLAY_GAMES } from "../data/howToPlay";
 
@@ -109,8 +108,6 @@ export default function RoomPage() {
         padding: "24px 20px",
       }}
     >
-      {/* Top Ad */}
-      {/* <AdBanner slot="top" style={{ marginBottom: '24px' }} /> */}
 
       {/* ── Top bar ── */}
       <div
@@ -410,10 +407,6 @@ export default function RoomPage() {
           onClose={() => setShowHowToPlay(false)}
         />
       )}
-      {/* Bottom Ad */}
-      {/* <div style={{ marginTop: '24px' }}>
-        <AdBanner slot="inline" />
-      </div> */}
     </div>
   );
 }

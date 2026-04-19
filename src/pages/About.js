@@ -1,6 +1,5 @@
 import React from 'react';
 import PageLayout from '../components/PageLayout';
-import AdBanner from '../components/AdBanner';
 import { SITE_CONFIG } from '../config/config';
 
 const FEATURES = [
@@ -34,8 +33,6 @@ export default function About() {
             or hosting a casual game night — {SITE_CONFIG.app_name_without_space} has you covered.
           </p>
         </Section>
-
-        {/* <AdBanner slot="inline" style={{ marginBottom: '40px' }} /> */}
 
         {/* Games */}
         <Section label="Our Games">

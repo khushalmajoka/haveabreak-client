@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import PageLayout from '../components/PageLayout';
-import AdBanner from '../components/AdBanner';
 import toast from 'react-hot-toast';
 import { SITE_CONFIG } from '../config/config';
 
@@ -140,8 +139,6 @@ export default function Contact() {
             {loading ? 'Sending...' : '📤 Send Message'}
           </button>
         </div>
-
-        {/* <AdBanner slot="inline" style={{ marginTop: '32px' }} /> */}
 
         {/* Direct contact info */}
         <div style={{

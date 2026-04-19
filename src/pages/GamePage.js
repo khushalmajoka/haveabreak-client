@@ -2,7 +2,6 @@ import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useSocket } from "../context/SocketContext";
 import toast from "react-hot-toast";
-import AdBanner from "../components/AdBanner";
 import ShareButton from "../components/ShareButton";
 import logger from "../utils/logger";
 import DisconnectBanner from "../components/DisconnectBanner";
@@ -211,8 +210,6 @@ export default function GamePage() {
   return (
     <div className="page-wrap">
       <DisconnectBanner connected={connected} />
-      {/* Top Ad */}
-      {/* <AdBanner slot="top" style={{ marginBottom: '16px' }} /> */}
 
       {/* Room Code Bar */}
       <div className="top-bar">
@@ -252,11 +249,6 @@ export default function GamePage() {
       </div>
 
       <div style={{ display: "flex", gap: "16px", flex: 1 }}>
-        {/* Sidebar Ad */}
-        {/* <div style={{ display: 'none', '@media (min-width: 768px)': { display: 'block' } }}>
-          <AdBanner slot="sidebar" />
-        </div> */}
-
         <div style={{ flex: 1 }}>
           {/* Players */}
           <div className="players-row">
@@ -438,9 +430,6 @@ export default function GamePage() {
           )}
         </div>
       </div>
-
-      {/* Bottom Ad */}
-      {/* <AdBanner slot="bottom" style={{ marginTop: '16px' }} /> */}
     </div>
   );
 }
@@ -537,7 +526,6 @@ function GameOverScreen({ winner, players, myId, onHome }) {
         padding: "24px",
       }}
     >
-      {/* <AdBanner slot="top" style={{ marginBottom: '32px', width: '100%', maxWidth: '700px' }} /> */}
 
       <div
         style={{
@@ -620,8 +608,6 @@ function GameOverScreen({ winner, players, myId, onHome }) {
           🏠 Back to Home
         </button>
       </div>
-
-      {/* <AdBanner slot="inline" style={{ marginTop: '28px', maxWidth: '700px', width: '100%' }} /> */}
     </div>
   );
 }
