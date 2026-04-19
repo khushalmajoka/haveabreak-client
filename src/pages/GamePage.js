@@ -6,6 +6,7 @@ import AdBanner from "../components/AdBanner";
 import ShareButton from "../components/ShareButton";
 import logger from "../utils/logger";
 import DisconnectBanner from "../components/DisconnectBanner";
+import STORAGE_KEYS from '../config/storageKeys';
 
 export default function GamePage() {
   const { roomCode } = useParams();
@@ -28,7 +29,7 @@ export default function GamePage() {
   const [lastAction, setLastAction] = useState(null); // { type: 'correct'|'wrong'|'timeout', msg }
   const [shake, setShake] = useState(false);
 
-  const myId = localStorage.getItem("stablePlayerId");
+  const myId = localStorage.getItem(STORAGE_KEYS.PLAYER_ID);
   const isSpectator = location.state?.spectator === true;
   const isMyTurn =
     !isSpectator &&

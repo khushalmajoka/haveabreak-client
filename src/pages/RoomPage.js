@@ -18,7 +18,7 @@ export default function RoomPage() {
   const [room, setRoom] = useState(null);
   const [showHowToPlay, setShowHowToPlay] = useState(false);
 
-  const myStableId = localStorage.getItem("stablePlayerId");
+  const myStableId = localStorage.getItem(STORAGE_KEYS.PLAYER_ID);
 
   useEffect(() => {
     if (!socket) return;

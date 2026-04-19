@@ -7,6 +7,7 @@ import logger from "../utils/logger";
 import DisconnectBanner from "../components/DisconnectBanner";
 
 import { RANKS, SUIT_COLOR } from "../constants/cardConstants";
+import STORAGE_KEYS from "../config/storageKeys";
 const RANK_ORDER = {
   2: 2,
   3: 3,
@@ -108,7 +109,7 @@ export default function BluffGamePage() {
     } else {
       socket.emit("bluff_join_room", {
         roomCode,
-        playerName: localStorage.getItem("playerName") || "Player",
+        playerName: localStorage.getItem(STORAGE_KEYS.PLAYER_NAME) || "Player",
         playerId: stableId,
       });
     }
@@ -121,7 +122,7 @@ export default function BluffGamePage() {
       });
       socket.emit("bluff_join_room", {
         roomCode,
-        playerName: localStorage.getItem("playerName") || "Player",
+        playerName: localStorage.getItem(STORAGE_KEYS.PLAYER_NAME) || "Player",
         playerId: stableId,
       });
     };
