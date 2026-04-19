@@ -4,7 +4,6 @@ import { useSocket } from "../context/SocketContext";
 import toast from "react-hot-toast";
 import AdBanner from "../components/AdBanner";
 import ShareButton from "../components/ShareButton";
-import { BASE_URL } from "../config/config";
 import { HOW_TO_PLAY_GAMES } from "../data/howToPlay";
 
 /**
@@ -24,30 +23,36 @@ export default function RoomPage() {
   useEffect(() => {
     if (!socket) return;
 
-    fetch(`${BASE_URL}/api/rooms/${roomCode}`)
-      .then((r) => r.json())
-      .then((data) => {
-        if (data.room) setRoom(data.room);
-        else navigate("/");
-      })
-      .catch(() => navigate("/"));
+    // Request room state via socket — same channel as all other updates,
+    // so there is no race condition between fetch and socket events
+    socket.emit("get_room_state", { roomCode });
+
+    const onRoomState = ({ room }) => {
+      if (!room) return navigate("/");
+      setRoom(room);
+    };
 
     const onPlayerJoined = ({ players }) => {
       setRoom((r) => (r ? { ...r, players } : r));
       toast.success("A player joined!");
     };
+
     const onPlayerLeft = ({ playerName, players }) => {
       setRoom((r) => (r ? { ...r, players } : r));
       toast(`${playerName} left the room`, { icon: "👋" });
     };
-    const onSettingsUpdated = ({ settings, players }) =>
-      setRoom((r) =>
-        r ? { ...r, settings, ...(players ? { players } : {}) } : r,
-      );
-    const onGameStarted = (data) =>
+
+    const onSettingsUpdated = ({ settings, players }) => {
+      setRoom((r) => (r ? { ...r, settings, players } : r));
+    };
+
+    const onGameStarted = (data) => {
       navigate(`/wordbomb/game/${roomCode}`, { state: data });
+    };
+
     const onError = ({ message }) => toast.error(message);
 
+    socket.on("room_state", onRoomState);
     socket.on("player_joined", onPlayerJoined);
     socket.on("player_left", onPlayerLeft);
     socket.on("settings_updated", onSettingsUpdated);
@@ -55,6 +60,7 @@ export default function RoomPage() {
     socket.on("error", onError);
 
     return () => {
+      socket.off("room_state", onRoomState);
       socket.off("player_joined", onPlayerJoined);
       socket.off("player_left", onPlayerLeft);
       socket.off("settings_updated", onSettingsUpdated);
