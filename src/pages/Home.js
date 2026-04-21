@@ -67,7 +67,7 @@ export default function Home() {
         <GameRow
           title="Live Games"
           games={liveGames}
-          onSelect={(game) => setSelectedGame(game)}
+          onSelect={(game, mode) => setSelectedGame({ game, mode })}
           onHowToPlay={(game) => setHowToPlayGame(game.id)}
         />
 
@@ -138,7 +138,8 @@ export default function Home() {
       {/* Modal */}
       {selectedGame && (
         <GameModal
-          game={selectedGame}
+          game={selectedGame.game}
+          initialMode={selectedGame.mode}
           onClose={() => setSelectedGame(null)}
           onNavigate={(path) => navigate(path)}
         />
@@ -184,7 +185,7 @@ function GameRow({ title, games, onSelect, onHowToPlay }) {
           <GameCard
             key={game.id}
             game={game}
-            onSelect={() => onSelect(game)}
+            onSelect={(_, mode) => onSelect(game, mode)}
             onHowToPlay={(event) => {
               event.stopPropagation();
               onHowToPlay(game);
@@ -201,12 +202,10 @@ function GameCard({ game, onSelect, onHowToPlay }) {
 
   return (
     <div
-      onClick={onSelect}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
-        background:
-          hovered && game.enabled ? game.gradient : "var(--bg-card)",
+        background: hovered && game.enabled ? game.gradient : "var(--bg-card)",
         border: `1px solid ${hovered && game.enabled ? game.border : "var(--border)"}`,
         borderRadius: "var(--radius)",
         padding: "24px",
@@ -287,6 +286,10 @@ function GameCard({ game, onSelect, onHowToPlay }) {
           }}
         >
           <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onSelect(game, "create");
+            }}
             style={{
               flex: 1,
               padding: "10px",
@@ -308,6 +311,10 @@ function GameCard({ game, onSelect, onHowToPlay }) {
             + Create Room
           </button>
           <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onSelect(game, "join");
+            }}
             style={{
               flex: 1,
               padding: "10px",
