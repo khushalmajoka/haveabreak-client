@@ -74,7 +74,7 @@ export default function Home() {
         <GameRow
           title="Coming Soon"
           games={upcomingGames}
-          onSelect={(game) => game.available && setSelectedGame(game)}
+          onSelect={(game) => game.enabled && setSelectedGame(game)}
           onHowToPlay={(game) => setHowToPlayGame(game.id)}
         />
       </main>
@@ -206,15 +206,15 @@ function GameCard({ game, onSelect, onHowToPlay }) {
       onMouseLeave={() => setHovered(false)}
       style={{
         background:
-          hovered && game.available ? game.gradient : "var(--bg-card)",
-        border: `1px solid ${hovered && game.available ? game.border : "var(--border)"}`,
+          hovered && game.enabled ? game.gradient : "var(--bg-card)",
+        border: `1px solid ${hovered && game.enabled ? game.border : "var(--border)"}`,
         borderRadius: "var(--radius)",
         padding: "24px",
-        cursor: game.available ? "pointer" : "default",
+        cursor: game.enabled ? "pointer" : "default",
         transition: "all 0.25s ease",
-        transform: hovered && game.available ? "translateY(-3px)" : "none",
+        transform: hovered && game.enabled ? "translateY(-3px)" : "none",
         boxShadow:
-          hovered && game.available ? `0 8px 32px rgba(0,0,0,0.4)` : "none",
+          hovered && game.enabled ? `0 8px 32px rgba(0,0,0,0.4)` : "none",
         animation: "fadeIn 0.4s ease both",
         position: "relative",
         overflow: "hidden",
@@ -231,11 +231,11 @@ function GameCard({ game, onSelect, onHowToPlay }) {
           position: "absolute",
           top: "14px",
           right: "14px",
-          background: game.available
+          background: game.enabled
             ? `${game.color}22`
             : "rgba(255,255,255,0.06)",
-          border: `1px solid ${game.available ? `${game.color}44` : "rgba(255,255,255,0.1)"}`,
-          color: game.available ? game.color : "var(--text-muted)",
+          border: `1px solid ${game.enabled ? `${game.color}44` : "rgba(255,255,255,0.1)"}`,
+          color: game.enabled ? game.color : "var(--text-muted)",
           fontSize: "10px",
           fontWeight: 700,
           fontFamily: "var(--font-mono)",
@@ -256,8 +256,8 @@ function GameCard({ game, onSelect, onHowToPlay }) {
           fontSize: "20px",
           fontWeight: 700,
           marginBottom: "8px",
-          color: game.available ? game.color : "var(--text)",
-          opacity: game.available ? 1 : 0.6,
+          color: game.enabled ? game.color : "var(--text)",
+          opacity: game.enabled ? 1 : 0.6,
         }}
       >
         {game.name}
@@ -270,14 +270,14 @@ function GameCard({ game, onSelect, onHowToPlay }) {
           color: "var(--text-muted)",
           lineHeight: 1.6,
           marginBottom: "20px",
-          opacity: game.available ? 1 : 0.6,
+          opacity: game.enabled ? 1 : 0.6,
         }}
       >
         {game.description}
       </p>
 
       {/* Buttons */}
-      {game.available ? (
+      {game.enabled ? (
         <div
           style={{
             display: "flex",
