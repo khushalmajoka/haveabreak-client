@@ -4,6 +4,7 @@ import { useSocket } from "../context/SocketContext";
 import toast from "react-hot-toast";
 import ShareButton from "../components/ShareButton";
 import { HOW_TO_PLAY_GAMES } from "../data/howToPlay";
+import STORAGE_KEYS from "../config/storageKeys";
 
 /**
  * RoomPage — Lobby for Word Bomb.
@@ -58,6 +59,12 @@ export default function RoomPage() {
     socket.on("game_started", onGameStarted);
     socket.on("error", onError);
 
+    // Re-fetch room state after socket reconnects (mobile tab switch / signal drop)
+    const handleReconnect = () => {
+      socket.emit("get_room_state", { roomCode });
+    };
+    window.addEventListener("socket:reconnected", handleReconnect);
+
     return () => {
       socket.off("room_state", onRoomState);
       socket.off("player_joined", onPlayerJoined);
@@ -65,6 +72,7 @@ export default function RoomPage() {
       socket.off("settings_updated", onSettingsUpdated);
       socket.off("game_started", onGameStarted);
       socket.off("error", onError);
+      window.removeEventListener("socket:reconnected", handleReconnect);
     };
   }, [socket, roomCode, navigate]);
 
@@ -108,7 +116,6 @@ export default function RoomPage() {
         padding: "24px 20px",
       }}
     >
-
       {/* ── Top bar ── */}
       <div
         style={{
